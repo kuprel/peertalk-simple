@@ -94,8 +94,8 @@ class ManualViewController: UIViewController {
     /** Checks if the device is connected, and presents an alert view if it is not */
     func isConnected() -> Bool {
         if peerChannel == nil {
-            let alert = UIAlertController(title: "Disconnected", message: "Please connect to a device first", preferredStyle: UIAlertControllerStyle.alert)
-            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+            let alert = UIAlertController(title: "Disconnected", message: "Please connect to a device first", preferredStyle: UIAlertController.Style.alert)
+            alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
             self.present(alert, animated: true, completion: nil)
         }
         return peerChannel != nil
@@ -189,18 +189,21 @@ extension ManualViewController: PTChannelDelegate {
 extension ManualViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     // Get the image and send it
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+// Local variable inserted by Swift 4.2 migrator.
+let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
+
         
         // Get the picked image
-        let image = info[UIImagePickerControllerOriginalImage] as! UIImage
-        
+//        let image = infoconvertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage) as! UIImage
+        let image = info[UIImagePickerController.InfoKey.originalImage.rawValue] as! UIImage
         // Update our UI on the main thread
         self.imageView.image = image
         
         // Send the data on the background thread to make sure the UI does not freeze
         DispatchQueue.global(qos: .background).async {
             // Convert the data using the second universal method
-            let data = UIImageJPEGRepresentation(image, 1.0)!
+            let data = image.jpegData(compressionQuality: 1.0)!
             let dispatchData = (data as NSData).createReferencingDispatchData()!
             self.sendData(data: dispatchData, type: PTType.image)
         }
@@ -227,3 +230,13 @@ extension ManualViewController: UIImagePickerControllerDelegate, UINavigationCon
 
 
 
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromUIImagePickerControllerInfoKeyDictionary(_ input: [UIImagePickerController.InfoKey: Any]) -> [String: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map {key, value in (key.rawValue, value)})
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromUIImagePickerControllerInfoKey(_ input: UIImagePickerController.InfoKey) -> String {
+	return input.rawValue
+}
