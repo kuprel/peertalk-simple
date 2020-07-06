@@ -16,26 +16,26 @@ class SimpleViewController: UIViewController {
     @IBOutlet weak var imageButton: UIButton!
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var statusLabel: UILabel!
-    
+
     // Properties
     let ptManager = PTManager.instance
     let imagePicker = UIImagePickerController()
-    
+
     // UI Setup
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
+
         addButton.layer.cornerRadius = addButton.frame.height/2
         imageButton.layer.cornerRadius = imageButton.frame.height/2
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         // Setup the PTManager
         ptManager.delegate = self
         ptManager.connect(portNumber: PORT_NUMBER)
-        
+
         // Setup imagge picker
         imagePicker.delegate = self
         imagePicker.allowsEditing = false
@@ -51,7 +51,7 @@ class SimpleViewController: UIViewController {
             showAlert()
         }
     }
-    
+
     @IBAction func imageButtonTapped(_ sender: UIButton) {
         if ptManager.isConnected {
             self.present(imagePicker, animated: true, completion: nil)
@@ -59,7 +59,7 @@ class SimpleViewController: UIViewController {
             showAlert()
         }
     }
-    
+
     func showAlert() {
         let alert = UIAlertController(title: "Disconnected", message: "Please connect to a device first", preferredStyle: UIAlertController.Style.alert)
         alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
@@ -67,14 +67,12 @@ class SimpleViewController: UIViewController {
     }
 }
 
-
-
 extension SimpleViewController: PTManagerDelegate {
-    
+
     func peertalk(shouldAcceptDataOfType type: UInt32) -> Bool {
         return true
     }
-    
+
     func peertalk(didReceiveData data: Data, ofType type: UInt32) {
         if type == PTType.number.rawValue {
             let count = data.convert() as! Int
@@ -84,46 +82,43 @@ extension SimpleViewController: PTManagerDelegate {
             self.imageView.image = image
         }
     }
-    
+
     func peertalk(didChangeConnection connected: Bool) {
         print("Connection: \(connected)")
         self.statusLabel.text = connected ? "Connected" : "Disconnected"
     }
-    
+
 }
 
-
-
 extension SimpleViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
 // Local variable inserted by Swift 4.2 migrator.
 let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
 
         let image = info[UIImagePickerController.InfoKey.originalImage.rawValue] as! UIImage
         self.imageView.image = image
-        
+
         DispatchQueue.global(qos: .background).async {
             let data = image.jpegData(compressionQuality: 1.0)!
             self.ptManager.sendData(data: data, type: PTType.image.rawValue, completion: nil)
         }
-        
+
         dismiss(animated: true, completion: nil)
     }
-    
-    
+
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         dismiss(animated: true, completion: nil)
     }
-    
+
 }
 
 // Helper function inserted by Swift 4.2 migrator.
-fileprivate func convertFromUIImagePickerControllerInfoKeyDictionary(_ input: [UIImagePickerController.InfoKey: Any]) -> [String: Any] {
+private func convertFromUIImagePickerControllerInfoKeyDictionary(_ input: [UIImagePickerController.InfoKey: Any]) -> [String: Any] {
 	return Dictionary(uniqueKeysWithValues: input.map {key, value in (key.rawValue, value)})
 }
 
 // Helper function inserted by Swift 4.2 migrator.
-fileprivate func convertFromUIImagePickerControllerInfoKey(_ input: UIImagePickerController.InfoKey) -> String {
+private func convertFromUIImagePickerControllerInfoKey(_ input: UIImagePickerController.InfoKey) -> String {
 	return input.rawValue
 }

@@ -17,23 +17,23 @@ class ManualViewController: NSViewController {
     @IBOutlet weak var imageView: NSImageView!
     @IBOutlet weak var statusLabel: NSTextField!
     var panel = NSOpenPanel()
-    
+
     // MARK: Constants
-    
+
     /** The interval for rechecking whether or not an iOS device is connected */
     let PTAppReconnectDelay: TimeInterval = 1.0
-    
+
     // MARK: Properties
     var connectingToDeviceID: NSNumber!
     var connectedDeviceID: NSNumber!
     var connectedDeviceProperties: NSDictionary?
-    
+
     var notConnectedQueue = DispatchQueue(label: "PTExample.notConnectedQueue")
     var notConnectedQueueSuspended: Bool = false
-    
+
     var connectedChannel: PTChannel? {
         didSet {
-            
+
             // Toggle the notConnectedQueue depending on if we are connected or not
             if connectedChannel == nil && notConnectedQueueSuspended {
                 notConnectedQueue.resume()
@@ -42,23 +42,22 @@ class ManualViewController: NSViewController {
                 notConnectedQueue.suspend()
                 notConnectedQueueSuspended = true
             }
-            
+
             // Reconnect to the device if we were originally connecting to one
             if connectedChannel == nil && connectingToDeviceID != nil {
                 self.enqueueConnectToUSBDevice()
             }
         }
     }
-    
-    
+
     // MARK: Methods
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         // Start the peertalk service
         self.startListeningForDevices()
         self.enqueueConnectToLocalIPv4Port()
-        
+
         // Setup file chooser
         panel.canChooseFiles = true
         panel.canChooseDirectories = false
@@ -71,35 +70,35 @@ class ManualViewController: NSViewController {
         if isConnected() {
             let num = Int(label.stringValue)! + 1
             self.label.stringValue = "\(num)"
-            
+
             let data = NSKeyedArchiver.archivedData(withRootObject: num) as NSData
             self.sendData(data: data.createReferencingDispatchData(), type: PTType.number)
         }
     }
-    
+
     // Present the image picker if the device is connected
     @IBAction func imageButtonPressed(_ sender: NSButton) {
         if isConnected() {
             // Show the file chooser panel
             let opened = panel.runModal()
-            
+
             // If the user selected an image, update the UI and send the image
             if opened.rawValue == NSFileHandlingPanelOKButton {
                 let url = panel.url!
                 let image = NSImage(byReferencing: url)
                 self.imageView.image = image
-                
+
                 let data = NSData(contentsOf: url)!
                 self.sendData(data: data.createReferencingDispatchData(), type: PTType.image)
             }
         }
     }
-    
+
     /** Whether or not the device is connected */
     func isConnected() -> Bool {
         return connectedChannel != nil
     }
-    
+
     /** Sends data to the connected device */
     func sendData(data: __DispatchData, type: PTType) {
         connectedChannel?.sendFrame(ofType: type.rawValue, tag: PTFrameNoTag, withPayload: data as __DispatchData!, callback: { (error) in
@@ -109,24 +108,22 @@ class ManualViewController: NSViewController {
 
 }
 
-
-
 // MARK: - PTChannel Delegate
 extension ManualViewController: PTChannelDelegate {
-    
+
     // Decide whether or not to accept the frame
     func ioFrameChannel(_ channel: PTChannel!, shouldAcceptFrameOfType type: UInt32, tag: UInt32, payloadSize: UInt32) -> Bool {
         // Optional: Check the frame type and reject specific ones it
         return true
     }
-    
+
     // Receive the frame data
     func ioFrameChannel(_ channel: PTChannel, didReceiveFrameOfType type: UInt32, tag: UInt32, payload: PTData) {
-        
+
         // Creates the data
         let dispatchData = payload.dispatchData as DispatchData
         let data = NSData(contentsOfDispatchData: dispatchData as __DispatchData) as Data
-        
+
         // Check frame type and get the corresponding data
         if type == PTType.number.rawValue {
             let count = NSKeyedUnarchiver.unarchiveObject(with: data) as! Int
@@ -135,48 +132,42 @@ extension ManualViewController: PTChannelDelegate {
             let image = NSImage(data: data)
             self.imageView.image = image
         }
-        
-        
+
     }
-    
+
     // Connection was ended
     func ioFrameChannel(_ channel: PTChannel!, didEndWithError error: Error!) {
-        
+
         // Check that the disconnected device is the current device
         if connectedDeviceID != nil && connectedDeviceID.isEqual(to: channel.userInfo) {
             self.didDisconnect(fromDevice: connectedDeviceID)
         }
-        
+
         // Check that the disconnected channel is the current one
         if connectedChannel == channel {
             print("Disconnected from \(channel.userInfo)")
             self.connectedChannel = nil
         }
-        
+
     }
-    
+
 }
-
-
-
-
-
 
 // MARK: - Helper methods
 extension ManualViewController {
-    
+
     func startListeningForDevices() {
-        
+
         // Grab the notification center instance
         let nc = NotificationCenter.default
-        
+
         // Add an observer for when the device attaches
         nc.addObserver(forName: NSNotification.Name.PTUSBDeviceDidAttach, object: PTUSBHub.shared(), queue: nil) { (note) in
-            
+
             // Grab the device ID from the user info
             let deviceID = note.userInfo!["DeviceID"] as! NSNumber
             print("Attached to device: \(deviceID)")
-            
+
             // Update our properties on our thread
             self.notConnectedQueue.async(execute: {() -> Void in
                 if self.connectingToDeviceID == nil || !deviceID.isEqual(to: self.connectingToDeviceID) {
@@ -187,14 +178,14 @@ extension ManualViewController {
                 }
             })
         }
-        
+
         // Add an observer for when the device detaches
         nc.addObserver(forName: NSNotification.Name.PTUSBDeviceDidDetach, object: PTUSBHub.shared(), queue: nil) { (note) in
-            
+
             // Grab the device ID from the user info
             let deviceID = note.userInfo!["DeviceID"] as! NSNumber
             print("Detached from device: \(deviceID)")
-            
+
             // Update our properties on our thread
             if self.connectingToDeviceID.isEqual(to: deviceID) {
                 self.connectedDeviceProperties = nil
@@ -203,16 +194,16 @@ extension ManualViewController {
                     self.connectedChannel?.close()
                 }
             }
-            
+
         }
-        
+
     }
-    
+
     // Runs when the device disconnects
     func didDisconnect(fromDevice deviceID: NSNumber) {
         print("Disconnected from device")
         self.statusLabel.stringValue = "Status: Disconnected"
-        
+
         // Notify the class that the device has changed
         if connectedDeviceID.isEqual(to: deviceID) {
             self.willChangeValue(forKey: "connectedDeviceID")
@@ -220,7 +211,7 @@ extension ManualViewController {
             self.didChangeValue(forKey: "connectedDeviceID")
         }
     }
-    
+
     /** Disconnects from the connected channel */
     func disconnectFromCurrentChannel() {
         if connectedDeviceID != nil && connectedChannel != nil {
@@ -228,7 +219,7 @@ extension ManualViewController {
             self.connectedChannel = nil
         }
     }
-    
+
     @objc func enqueueConnectToLocalIPv4Port() {
         notConnectedQueue.async(execute: {() -> Void in
             DispatchQueue.main.async(execute: {() -> Void in
@@ -236,11 +227,11 @@ extension ManualViewController {
             })
         })
     }
-    
+
     func connectToLocalIPv4Port() {
         let channel = PTChannel(delegate: self)
         channel?.userInfo = "127.0.0.1:\(PORT_NUMBER)"
-        
+
         channel?.connect(toPort: in_port_t(PORT_NUMBER), iPv4Address: INADDR_LOOPBACK, callback: { (error, address) in
             if error == nil {
                 // Update to new channel
@@ -250,11 +241,11 @@ extension ManualViewController {
             } else {
                 print(error!)
             }
-            
+
             self.perform(#selector(self.enqueueConnectToLocalIPv4Port), with: nil, afterDelay: self.PTAppReconnectDelay)
         })
     }
-    
+
     @objc func enqueueConnectToUSBDevice() {
         notConnectedQueue.async(execute: {() -> Void in
             DispatchQueue.main.async(execute: {() -> Void in
@@ -262,20 +253,20 @@ extension ManualViewController {
             })
         })
     }
-    
+
     func connectToUSBDevice() {
-        
+
         // Create the new channel
         let channel = PTChannel(delegate: self)
         channel?.userInfo = connectingToDeviceID
         channel?.delegate = self
-        
+
         // Connect to the device
         channel?.connect(toPort: Int32(PORT_NUMBER), overUSBHub: PTUSBHub.shared(), deviceID: connectingToDeviceID, callback: { (error) in
             if error != nil {
                 print(error!)
                 // Reconnet to the device
-                if (channel?.userInfo != nil && (channel?.userInfo as! NSNumber).isEqual(to: self.connectingToDeviceID)) {
+                if channel?.userInfo != nil && (channel?.userInfo as! NSNumber).isEqual(to: self.connectingToDeviceID) {
                     self.perform(#selector(self.enqueueConnectToUSBDevice), with: nil, afterDelay: self.PTAppReconnectDelay)
                 }
             } else {
@@ -288,10 +279,5 @@ extension ManualViewController {
             }
         })
     }
-    
+
 }
-
-
-
-
-
