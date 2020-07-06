@@ -16,5 +16,4 @@
 #import "PTUSBHub.h"
 #import "PTProtocol.h"
 
-
 #endif /* Header_h */
