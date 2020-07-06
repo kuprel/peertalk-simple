@@ -11,7 +11,6 @@ import Quartz
 
 // MARK: - Main Class
 class ManualViewController: NSViewController {
-
     // MARK: Outlets
     @IBOutlet weak var label: NSTextField!
     @IBOutlet weak var imageView: NSImageView!
@@ -33,7 +32,6 @@ class ManualViewController: NSViewController {
 
     var connectedChannel: PTChannel? {
         didSet {
-
             // Toggle the notConnectedQueue depending on if we are connected or not
             if connectedChannel == nil && notConnectedQueueSuspended {
                 notConnectedQueue.resume()
@@ -101,16 +99,14 @@ class ManualViewController: NSViewController {
 
     /** Sends data to the connected device */
     func sendData(data: __DispatchData, type: PTType) {
-        connectedChannel?.sendFrame(ofType: type.rawValue, tag: PTFrameNoTag, withPayload: data as __DispatchData!, callback: { (error) in
+        connectedChannel?.sendFrame(ofType: type.rawValue, tag: PTFrameNoTag, withPayload: data as __DispatchData!, callback: { error in
             print(error ?? "Sent")
         })
     }
-
 }
 
 // MARK: - PTChannel Delegate
 extension ManualViewController: PTChannelDelegate {
-
     // Decide whether or not to accept the frame
     func ioFrameChannel(_ channel: PTChannel!, shouldAcceptFrameOfType type: UInt32, tag: UInt32, payloadSize: UInt32) -> Bool {
         // Optional: Check the frame type and reject specific ones it
@@ -119,7 +115,6 @@ extension ManualViewController: PTChannelDelegate {
 
     // Receive the frame data
     func ioFrameChannel(_ channel: PTChannel, didReceiveFrameOfType type: UInt32, tag: UInt32, payload: PTData) {
-
         // Creates the data
         let dispatchData = payload.dispatchData as DispatchData
         let data = NSData(contentsOfDispatchData: dispatchData as __DispatchData) as Data
@@ -132,12 +127,10 @@ extension ManualViewController: PTChannelDelegate {
             let image = NSImage(data: data)
             self.imageView.image = image
         }
-
     }
 
     // Connection was ended
     func ioFrameChannel(_ channel: PTChannel!, didEndWithError error: Error!) {
-
         // Check that the disconnected device is the current device
         if connectedDeviceID != nil && connectedDeviceID.isEqual(to: channel.userInfo) {
             self.didDisconnect(fromDevice: connectedDeviceID)
@@ -148,22 +141,17 @@ extension ManualViewController: PTChannelDelegate {
             print("Disconnected from \(channel.userInfo)")
             self.connectedChannel = nil
         }
-
     }
-
 }
 
 // MARK: - Helper methods
 extension ManualViewController {
-
     func startListeningForDevices() {
-
         // Grab the notification center instance
         let nc = NotificationCenter.default
 
         // Add an observer for when the device attaches
-        nc.addObserver(forName: NSNotification.Name.PTUSBDeviceDidAttach, object: PTUSBHub.shared(), queue: nil) { (note) in
-
+        nc.addObserver(forName: NSNotification.Name.PTUSBDeviceDidAttach, object: PTUSBHub.shared(), queue: nil) { note in
             // Grab the device ID from the user info
             let deviceID = note.userInfo!["DeviceID"] as! NSNumber
             print("Attached to device: \(deviceID)")
@@ -180,8 +168,7 @@ extension ManualViewController {
         }
 
         // Add an observer for when the device detaches
-        nc.addObserver(forName: NSNotification.Name.PTUSBDeviceDidDetach, object: PTUSBHub.shared(), queue: nil) { (note) in
-
+        nc.addObserver(forName: NSNotification.Name.PTUSBDeviceDidDetach, object: PTUSBHub.shared(), queue: nil) { note in
             // Grab the device ID from the user info
             let deviceID = note.userInfo!["DeviceID"] as! NSNumber
             print("Detached from device: \(deviceID)")
@@ -194,9 +181,7 @@ extension ManualViewController {
                     self.connectedChannel?.close()
                 }
             }
-
         }
-
     }
 
     // Runs when the device disconnects
@@ -232,7 +217,7 @@ extension ManualViewController {
         let channel = PTChannel(delegate: self)
         channel?.userInfo = "127.0.0.1:\(PORT_NUMBER)"
 
-        channel?.connect(toPort: in_port_t(PORT_NUMBER), iPv4Address: INADDR_LOOPBACK, callback: { (error, address) in
+        channel?.connect(toPort: in_port_t(PORT_NUMBER), iPv4Address: INADDR_LOOPBACK, callback: { error, address in
             if error == nil {
                 // Update to new channel
                 self.disconnectFromCurrentChannel()
@@ -255,14 +240,13 @@ extension ManualViewController {
     }
 
     func connectToUSBDevice() {
-
         // Create the new channel
         let channel = PTChannel(delegate: self)
         channel?.userInfo = connectingToDeviceID
         channel?.delegate = self
 
         // Connect to the device
-        channel?.connect(toPort: Int32(PORT_NUMBER), overUSBHub: PTUSBHub.shared(), deviceID: connectingToDeviceID, callback: { (error) in
+        channel?.connect(toPort: Int32(PORT_NUMBER), overUSBHub: PTUSBHub.shared(), deviceID: connectingToDeviceID, callback: { error in
             if error != nil {
                 print(error!)
                 // Reconnet to the device
@@ -279,5 +263,4 @@ extension ManualViewController {
             }
         })
     }
-
 }

@@ -9,7 +9,6 @@
 import Cocoa
 
 class SimpleViewController: NSViewController {
-
     // MARK: - Outlets
     @IBOutlet weak var label: NSTextField!
     @IBOutlet weak var imageView: NSImageView!
@@ -55,14 +54,11 @@ class SimpleViewController: NSViewController {
                 let data = NSData(contentsOf: url)
                 ptManager.sendData(data: data as Data!, type: PTType.image.rawValue)
             }
-
         }
     }
-
 }
 
 extension SimpleViewController: PTManagerDelegate {
-
     func peertalk(shouldAcceptDataOfType type: UInt32) -> Bool {
         return true
     }
@@ -81,5 +77,4 @@ extension SimpleViewController: PTManagerDelegate {
         print("Connection: \(connected)")
         self.statusLabel.stringValue = connected ? "Connected" : "Disconnected"
     }
-
 }

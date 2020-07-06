@@ -9,7 +9,6 @@
 import UIKit
 
 class SimpleViewController: UIViewController {
-
     // Outlets
     @IBOutlet weak var label: UILabel!
     @IBOutlet weak var addButton: UIButton!
@@ -25,8 +24,8 @@ class SimpleViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        addButton.layer.cornerRadius = addButton.frame.height/2
-        imageButton.layer.cornerRadius = imageButton.frame.height/2
+        addButton.layer.cornerRadius = addButton.frame.height / 2
+        imageButton.layer.cornerRadius = imageButton.frame.height / 2
     }
 
     override func viewDidLoad() {
@@ -68,7 +67,6 @@ class SimpleViewController: UIViewController {
 }
 
 extension SimpleViewController: PTManagerDelegate {
-
     func peertalk(shouldAcceptDataOfType type: UInt32) -> Bool {
         return true
     }
@@ -87,11 +85,9 @@ extension SimpleViewController: PTManagerDelegate {
         print("Connection: \(connected)")
         self.statusLabel.text = connected ? "Connected" : "Disconnected"
     }
-
 }
 
 extension SimpleViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
 // Local variable inserted by Swift 4.2 migrator.
 let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
@@ -110,12 +106,11 @@ let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         dismiss(animated: true, completion: nil)
     }
-
 }
 
 // Helper function inserted by Swift 4.2 migrator.
 private func convertFromUIImagePickerControllerInfoKeyDictionary(_ input: [UIImagePickerController.InfoKey: Any]) -> [String: Any] {
-	return Dictionary(uniqueKeysWithValues: input.map {key, value in (key.rawValue, value)})
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (key.rawValue, value) })
 }
 
 // Helper function inserted by Swift 4.2 migrator.

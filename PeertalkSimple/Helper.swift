@@ -11,7 +11,6 @@ import Foundation
 let PORT_NUMBER = 4986
 
 extension String {
-
     /** A representation of the string in DispatchData form */
     var dispatchData: DispatchData {
         let data = self.data(using: .utf8)!
@@ -21,11 +20,9 @@ extension String {
 
         return dispatchData
     }
-
 }
 
 extension DispatchData {
-
     /** Converts DispatchData back into a String format */
     func toString() -> String {
         return String(bytes: self, encoding: .utf8)!
@@ -33,9 +30,8 @@ extension DispatchData {
 
     /** Converts DispatchData back into a Dictionary format */
     func toDictionary() -> NSDictionary {
-        return NSDictionary.init(contentsOfDispatchData: self as __DispatchData)
+        return NSDictionary(contentsOfDispatchData: self as __DispatchData)
     }
-
 }
 
 /** The different types of data to be used with Peertalk */

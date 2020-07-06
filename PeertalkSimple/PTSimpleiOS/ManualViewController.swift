@@ -9,7 +9,6 @@
 import UIKit
 
 class ManualViewController: UIViewController {
-
     // Outlets
     @IBOutlet weak var label: UILabel!
     @IBOutlet weak var addButton: UIButton!
@@ -26,8 +25,8 @@ class ManualViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        addButton.layer.cornerRadius = addButton.frame.height/2
-        imageButton.layer.cornerRadius = imageButton.frame.height/2
+        addButton.layer.cornerRadius = addButton.frame.height / 2
+        imageButton.layer.cornerRadius = imageButton.frame.height / 2
     }
 
     override func viewDidLoad() {
@@ -38,7 +37,7 @@ class ManualViewController: UIViewController {
 
         // Create a custom port number that the connection will use. I have declared it in the Helper.swift file
         // Make sure the Mac app uses the same number. Any 4 digit integer will work fine.
-        channel?.listen(onPort: in_port_t(PORT_NUMBER), iPv4Address: INADDR_LOOPBACK, callback: { (error) in
+        channel?.listen(onPort: in_port_t(PORT_NUMBER), iPv4Address: INADDR_LOOPBACK, callback: { error in
             if error != nil {
                 print("ERROR (Listening to post): \(error?.localizedDescription ?? "-1")")
             } else {
@@ -107,19 +106,16 @@ class ManualViewController: UIViewController {
     /** Sends data to the connected device */
     func sendData(data: __DispatchData, type: PTType) {
         if peerChannel != nil {
-            peerChannel?.sendFrame(ofType: type.rawValue, tag: PTFrameNoTag, withPayload: data, callback: { (error) in
+            peerChannel?.sendFrame(ofType: type.rawValue, tag: PTFrameNoTag, withPayload: data, callback: { error in
                 print(error?.localizedDescription ?? "Sent data")
             })
         }
     }
-
 }
 
 // MARK: - Channel Delegate
 extension ManualViewController: PTChannelDelegate {
-
     func ioFrameChannel(_ channel: PTChannel!, shouldAcceptFrameOfType type: UInt32, tag: UInt32, payloadSize: UInt32) -> Bool {
-
         // Check if the channel is our connected channel; otherwise ignore it
         // Optional: Check the frame type and optionally reject it
         if channel != peerChannel {
@@ -130,14 +126,12 @@ extension ManualViewController: PTChannelDelegate {
     }
 
     func ioFrameChannel(_ channel: PTChannel!, didReceiveFrameOfType type: UInt32, tag: UInt32, payload: PTData!) {
-
         // Create the data objects
         let dispatchData = payload.dispatchData as DispatchData
         let data = NSData(contentsOfDispatchData: dispatchData as __DispatchData) as Data
 
         // Check frame type
         if type == PTType.number.rawValue {
-
             // The first conversion method of DispatchData (explained in the addButtonTapped method)
             // let message = String(bytes: dispatchData, encoding: .utf8)
 
@@ -146,13 +140,10 @@ extension ManualViewController: PTChannelDelegate {
 
             // Update the UI
             self.label.text = "\(count)"
-
         } else if type == PTType.image.rawValue {
-
             // Conver the image and update the UI
             let image = UIImage(data: data)
             self.imageView.image = image
-
         }
     }
 
@@ -162,7 +153,6 @@ extension ManualViewController: PTChannelDelegate {
     }
 
     func ioFrameChannel(_ channel: PTChannel!, didAcceptConnection otherChannel: PTChannel!, from address: PTAddress!) {
-
         // Cancel any existing connections
         if peerChannel != nil {
             peerChannel?.cancel()
@@ -178,7 +168,6 @@ extension ManualViewController: PTChannelDelegate {
 
 // MARK: - Image Picker Delegate
 extension ManualViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-
     // Get the image and send it
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
 // Local variable inserted by Swift 4.2 migrator.
@@ -206,12 +195,11 @@ let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         dismiss(animated: true, completion: nil)
     }
-
 }
 
 // Helper function inserted by Swift 4.2 migrator.
 private func convertFromUIImagePickerControllerInfoKeyDictionary(_ input: [UIImagePickerController.InfoKey: Any]) -> [String: Any] {
-	return Dictionary(uniqueKeysWithValues: input.map {key, value in (key.rawValue, value)})
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (key.rawValue, value) })
 }
 
 // Helper function inserted by Swift 4.2 migrator.
