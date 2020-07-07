@@ -15,11 +15,8 @@
 		9F6A464A1E2F529200F35510 /* PTUSBHub.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F6A46401E2F527400F35510 /* PTUSBHub.m */; };
 		9F6A464B1E2F529400F35510 /* PTProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F6A463E1E2F527400F35510 /* PTProtocol.m */; };
 		9F6A464C1E2F529800F35510 /* PTChannel.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F6A463B1E2F527400F35510 /* PTChannel.m */; };
-		9F6A464E1E2F529F00F35510 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9F6A46361E2F527400F35510 /* Info.plist */; };
 		9F6A464F1E2F52AB00F35510 /* PTManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6A46421E2F527400F35510 /* PTManager.swift */; };
-		9F6A46521E2F52B300F35510 /* ManualViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6A46501E2F52B300F35510 /* ManualViewController.swift */; };
 		9F6A46531E2F52B300F35510 /* SimpleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6A46511E2F52B300F35510 /* SimpleViewController.swift */; };
-		9F6A46561E2F52BE00F35510 /* ManualViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6A46541E2F52BE00F35510 /* ManualViewController.swift */; };
 		9F6A46571E2F52BE00F35510 /* SimpleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6A46551E2F52BE00F35510 /* SimpleViewController.swift */; };
 		9F6A46581E2F52CC00F35510 /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6A46341E2F527400F35510 /* Helper.swift */; };
 		9FC554141E2F51DE001FB545 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC554131E2F51DE001FB545 /* AppDelegate.swift */; };
@@ -33,7 +30,6 @@
 
 /* Begin PBXFileReference section */
 		9F6A46341E2F527400F35510 /* Helper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
-		9F6A46361E2F527400F35510 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9F6A46371E2F527400F35510 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		9F6A46381E2F527400F35510 /* Peertalk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Peertalk.h; sourceTree = "<group>"; };
 		9F6A46391E2F527400F35510 /* prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = prefix.pch; sourceTree = "<group>"; };
@@ -46,9 +42,7 @@
 		9F6A46401E2F527400F35510 /* PTUSBHub.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PTUSBHub.m; sourceTree = "<group>"; };
 		9F6A46411E2F527400F35510 /* PeertalkSimple-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PeertalkSimple-Bridging-Header.h"; sourceTree = "<group>"; };
 		9F6A46421E2F527400F35510 /* PTManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PTManager.swift; sourceTree = "<group>"; };
-		9F6A46501E2F52B300F35510 /* ManualViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManualViewController.swift; sourceTree = "<group>"; };
 		9F6A46511E2F52B300F35510 /* SimpleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SimpleViewController.swift; sourceTree = "<group>"; };
-		9F6A46541E2F52BE00F35510 /* ManualViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManualViewController.swift; sourceTree = "<group>"; };
 		9F6A46551E2F52BE00F35510 /* SimpleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SimpleViewController.swift; sourceTree = "<group>"; };
 		9FC554111E2F51DE001FB545 /* PTSimpleiOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PTSimpleiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9FC554131E2F51DE001FB545 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -84,7 +78,6 @@
 		9F6A46351E2F527400F35510 /* peertalk */ = {
 			isa = PBXGroup;
 			children = (
-				9F6A46361E2F527400F35510 /* Info.plist */,
 				9F6A46371E2F527400F35510 /* LICENSE.txt */,
 				9F6A46381E2F527400F35510 /* Peertalk.h */,
 				9F6A46391E2F527400F35510 /* prefix.pch */,
@@ -125,7 +118,6 @@
 			isa = PBXGroup;
 			children = (
 				9FC554131E2F51DE001FB545 /* AppDelegate.swift */,
-				9F6A46501E2F52B300F35510 /* ManualViewController.swift */,
 				9F6A46511E2F52B300F35510 /* SimpleViewController.swift */,
 				9FC554171E2F51DE001FB545 /* Main.storyboard */,
 				9FC5541A1E2F51DE001FB545 /* Assets.xcassets */,
@@ -139,7 +131,6 @@
 			isa = PBXGroup;
 			children = (
 				9FC554291E2F51EB001FB545 /* AppDelegate.swift */,
-				9F6A46541E2F52BE00F35510 /* ManualViewController.swift */,
 				9F6A46551E2F52BE00F35510 /* SimpleViewController.swift */,
 				9FC5542F1E2F51EB001FB545 /* Main.storyboard */,
 				9FC5542D1E2F51EB001FB545 /* Assets.xcassets */,
@@ -245,7 +236,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9F6A464E1E2F529F00F35510 /* Info.plist in Resources */,
 				9FC5542E1E2F51EB001FB545 /* Assets.xcassets in Resources */,
 				9FC554311E2F51EB001FB545 /* Main.storyboard in Resources */,
 			);
@@ -269,7 +259,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "swiftlint autocorrect\n";
+			shellScript = "swiftlint\nswiftlint autocorrect\n";
 		};
 		6AEBB5BE24B3BD100031D6A1 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -286,7 +276,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "swiftlint autocorrect\n";
+			shellScript = "swiftlint\nswiftlint autocorrect\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -296,7 +286,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				9FC554141E2F51DE001FB545 /* AppDelegate.swift in Sources */,
-				9F6A46521E2F52B300F35510 /* ManualViewController.swift in Sources */,
 				9F6A46431E2F527400F35510 /* Helper.swift in Sources */,
 				9F6A46461E2F527400F35510 /* PTChannel.m in Sources */,
 				9F6A46531E2F52B300F35510 /* SimpleViewController.swift in Sources */,
@@ -314,7 +303,6 @@
 				9F6A464B1E2F529400F35510 /* PTProtocol.m in Sources */,
 				9F6A464A1E2F529200F35510 /* PTUSBHub.m in Sources */,
 				9F6A464C1E2F529800F35510 /* PTChannel.m in Sources */,
-				9F6A46561E2F52BE00F35510 /* ManualViewController.swift in Sources */,
 				9F6A46571E2F52BE00F35510 /* SimpleViewController.swift in Sources */,
 				9FC5542A1E2F51EB001FB545 /* AppDelegate.swift in Sources */,
 				9F6A46581E2F52CC00F35510 /* Helper.swift in Sources */,

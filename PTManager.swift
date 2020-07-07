@@ -49,11 +49,15 @@ protocol PTManagerDelegate {
             if !isConnected {
                 self.portNumber = portNumber
                 let channel = PTChannel(delegate: self)
-                channel?.listen(onPort: in_port_t(portNumber), iPv4Address: INADDR_LOOPBACK, callback: { error in
-                    if error == nil {
-                        self.serverChannel = channel
+                channel?.listen(
+                    onPort: in_port_t(portNumber),
+                    iPv4Address: INADDR_LOOPBACK,
+                    callback: { error in
+                        if error == nil {
+                            self.serverChannel = channel
+                        }
                     }
-                })
+                )
             }
         }
 
@@ -76,9 +80,12 @@ protocol PTManagerDelegate {
         func sendObject(object: Any, type: UInt32, completion: ((_ success: Bool) -> Void)? = nil) {
             let data = Data.toData(object: object)
             if peerChannel != nil {
-                peerChannel?.sendFrame(ofType: type, tag: PTFrameNoTag, withPayload: (data as NSData).createReferencingDispatchData(), callback: { _ in
-                    completion?(true)
-                })
+                peerChannel?.sendFrame(
+                    ofType: type,
+                    tag: PTFrameNoTag,
+                    withPayload: (data as NSData).createReferencingDispatchData(),
+                    callback: { _ in completion?(true) }
+                )
             } else {
                 completion?(false)
             }
@@ -87,20 +94,30 @@ protocol PTManagerDelegate {
         /** Sends data to the connected device */
         func sendData(data: Data, type: UInt32, completion: ((_ success: Bool) -> Void)? = nil) {
             if peerChannel != nil {
-                peerChannel?.sendFrame(ofType: type, tag: PTFrameNoTag, withPayload: (data as NSData).createReferencingDispatchData(), callback: { _ in
-                    completion?(true)
-                })
+                peerChannel?.sendFrame(
+                    ofType: type,
+                    tag: PTFrameNoTag,
+                    withPayload: (data as NSData).createReferencingDispatchData(),
+                    callback: { _ in completion?(true) }
+                )
             } else {
                 completion?(false)
             }
         }
 
         /** Sends data to the connected device */
-        func sendDispatchData(dispatchData: DispatchData, type: UInt32, completion: ((_ success: Bool) -> Void)? = nil) {
+        func sendDispatchData(
+            dispatchData: DispatchData,
+            type: UInt32,
+            completion: ((_ success: Bool) -> Void)? = nil
+        ) {
             if peerChannel != nil {
-                peerChannel?.sendFrame(ofType: type, tag: PTFrameNoTag, withPayload: dispatchData as __DispatchData, callback: { _ in
-                    completion?(true)
-                })
+                peerChannel?.sendFrame(
+                    ofType: type,
+                    tag: PTFrameNoTag,
+                    withPayload: dispatchData as __DispatchData,
+                    callback: { _ in completion?(true) }
+                )
             } else {
                 completion?(false)
             }
@@ -109,7 +126,12 @@ protocol PTManagerDelegate {
 
     // MARK: - Channel Delegate
     extension PTManager: PTChannelDelegate {
-        func ioFrameChannel(_ channel: PTChannel!, shouldAcceptFrameOfType type: UInt32, tag: UInt32, payloadSize: UInt32) -> Bool {
+        func ioFrameChannel(
+            _ channel: PTChannel!,
+            shouldAcceptFrameOfType type: UInt32,
+            tag: UInt32,
+            payloadSize: UInt32
+        ) -> Bool {
             // Check if the channel is our connected channel; otherwise ignore it
             if channel != peerChannel {
                 return false
@@ -118,7 +140,12 @@ protocol PTManagerDelegate {
             }
         }
 
-        func ioFrameChannel(_ channel: PTChannel!, didReceiveFrameOfType type: UInt32, tag: UInt32, payload: PTData!) {
+        func ioFrameChannel(
+            _ channel: PTChannel!,
+            didReceiveFrameOfType type: UInt32,
+            tag: UInt32,
+            payload: PTData!
+        ) {
             // Creates the data
             let dispatchData = payload.dispatchData as DispatchData
             let data = NSData(contentsOfDispatchData: dispatchData as __DispatchData) as Data
@@ -126,13 +153,18 @@ protocol PTManagerDelegate {
         }
 
         func ioFrameChannel(_ channel: PTChannel!, didEndWithError error: Error?) {
-            printDebug("ERROR (Connection ended): \(String(describing: error?.localizedDescription))")
+            let msg = String(describing: error?.localizedDescription)
+            printDebug("ERROR (Connection ended): \(msg)")
             peerChannel = nil
             serverChannel = nil
             delegate?.peertalk(didChangeConnection: false)
         }
 
-        func ioFrameChannel(_ channel: PTChannel!, didAcceptConnection otherChannel: PTChannel!, from address: PTAddress!) {
+        func ioFrameChannel(
+            _ channel: PTChannel!,
+            didAcceptConnection otherChannel: PTChannel!,
+            from address: PTAddress!
+        ) {
             // Cancel any existing connections
             if peerChannel != nil {
                 peerChannel?.cancel()
@@ -219,9 +251,12 @@ protocol PTManagerDelegate {
         func sendObject(object: Any, type: UInt32, completion: ((_ success: Bool) -> Void)? = nil) {
             let data = Data.toData(object: object) as NSData
             if connectedChannel != nil {
-                connectedChannel?.sendFrame(ofType: type, tag: PTFrameNoTag, withPayload: data.createReferencingDispatchData(), callback: { _ in
-                    completion?(true)
-                })
+                connectedChannel?.sendFrame(
+                    ofType: type,
+                    tag: PTFrameNoTag,
+                    withPayload: data.createReferencingDispatchData(),
+                    callback: { _ in completion?(true) }
+                )
             } else {
                 completion?(false)
             }
@@ -231,20 +266,30 @@ protocol PTManagerDelegate {
         func sendData(data: Data, type: UInt32, completion: ((_ success: Bool) -> Void)? = nil) {
             let data = data as NSData
             if connectedChannel != nil {
-                connectedChannel?.sendFrame(ofType: type, tag: PTFrameNoTag, withPayload: data.createReferencingDispatchData(), callback: { _ in
-                    completion?(true)
-                })
+                connectedChannel?.sendFrame(
+                    ofType: type,
+                    tag: PTFrameNoTag,
+                    withPayload: data.createReferencingDispatchData(),
+                    callback: { _ in completion?(true) }
+                )
             } else {
                 completion?(false)
             }
         }
 
         /** Sends data to the connected device */
-        func sendDispatchData(dispatchData: DispatchData, type: UInt32, completion: ((_ success: Bool) -> Void)? = nil) {
+        func sendDispatchData(
+            dispatchData: DispatchData,
+            type: UInt32,
+            completion: ((_ success: Bool) -> Void)? = nil
+        ) {
             if connectedChannel != nil {
-                connectedChannel?.sendFrame(ofType: type, tag: PTFrameNoTag, withPayload: dispatchData as __DispatchData, callback: { _ in
-                    completion?(true)
-                })
+                connectedChannel?.sendFrame(
+                    ofType: type,
+                    tag: PTFrameNoTag,
+                    withPayload: dispatchData as __DispatchData,
+                    callback: { _ in completion?(true) }
+                )
             } else {
                 completion?(false)
             }
@@ -254,12 +299,22 @@ protocol PTManagerDelegate {
         // MARK: - Channel Delegate
         extension PTManager: PTChannelDelegate {
             // Decide whether or not to accept the frame
-            func ioFrameChannel(_ channel: PTChannel!, shouldAcceptFrameOfType type: UInt32, tag: UInt32, payloadSize: UInt32) -> Bool {
-                return delegate!.peertalk(shouldAcceptDataOfType: type)
+            func ioFrameChannel(
+                _ channel: PTChannel!,
+                shouldAcceptFrameOfType type: UInt32,
+                tag: UInt32,
+                payloadSize: UInt32
+            ) -> Bool {
+                delegate!.peertalk(shouldAcceptDataOfType: type)
             }
 
             // Receive the frame data
-            func ioFrameChannel(_ channel: PTChannel, didReceiveFrameOfType type: UInt32, tag: UInt32, payload: PTData) {
+            func ioFrameChannel(
+                _ channel: PTChannel,
+                didReceiveFrameOfType type: UInt32,
+                tag: UInt32,
+                payload: PTData
+            ) {
                 // Creates the data
                 let dispatchData = payload.dispatchData as DispatchData
                 let data = NSData(contentsOfDispatchData: dispatchData as __DispatchData) as Data
@@ -275,7 +330,7 @@ protocol PTManagerDelegate {
 
                 // Check that the disconnected channel is the current one
                 if connectedChannel == channel {
-                    printDebug("Disconnected from \(channel.userInfo)")
+                    printDebug("Disconnected from \(channel.userInfo ?? "peer")")
                     self.connectedChannel = nil
                 }
             }
@@ -288,24 +343,34 @@ protocol PTManagerDelegate {
                 let nc = NotificationCenter.default
 
                 // Add an observer for when the device attaches
-                nc.addObserver(forName: NSNotification.Name.PTUSBDeviceDidAttach, object: PTUSBHub.shared(), queue: nil) { note in
+                nc.addObserver(
+                    forName: NSNotification.Name.PTUSBDeviceDidAttach,
+                    object: PTUSBHub.shared(),
+                    queue: nil
+                ) { note in
                     // Grab the device ID from the user info
                     let deviceID = note.userInfo!["DeviceID"] as! NSNumber
                     self.printDebug("Attached to device: \(deviceID)")
 
                     // Update our properties on our thread
                     self.notConnectedQueue.async(execute: {() -> Void in
-                        if self.connectingToDeviceID == nil || !deviceID.isEqual(to: self.connectingToDeviceID) {
+                        let c1 = self.connectingToDeviceID == nil
+                        if c1 || !deviceID.isEqual(to: self.connectingToDeviceID) {
                             self.disconnect()
                             self.connectingToDeviceID = deviceID
-                            self.connectedDeviceProperties = (note.userInfo?["Properties"] as? NSDictionary)
+                            let props = note.userInfo?["Properties"] as? NSDictionary
+                            self.connectedDeviceProperties = props
                             self.enqueueConnectToUSBDevice()
                         }
                     })
                 }
 
                 // Add an observer for when the device detaches
-                nc.addObserver(forName: NSNotification.Name.PTUSBDeviceDidDetach, object: PTUSBHub.shared(), queue: nil) { note in
+                nc.addObserver(
+                    forName: NSNotification.Name.PTUSBDeviceDidDetach,
+                    object: PTUSBHub.shared(),
+                    queue: nil
+                ) { note in
                     // Grab the device ID from the user info
                     let deviceID = note.userInfo!["DeviceID"] as! NSNumber
                     self.printDebug("Detached from device: \(deviceID)")
@@ -346,18 +411,26 @@ protocol PTManagerDelegate {
                 let channel = PTChannel(delegate: self)
                 channel?.userInfo = "127.0.0.1:\(portNumber ?? -1)"
 
-                channel?.connect(toPort: in_port_t(portNumber!), iPv4Address: INADDR_LOOPBACK, callback: { error, address in
-                    if error == nil {
-                        // Update to new channel
-                        self.disconnect()
-                        self.connectedChannel = channel
-                        channel?.userInfo = address!
-                    } else {
-                        self.printDebug(error!.localizedDescription)
-                    }
+                channel?.connect(
+                    toPort: in_port_t(portNumber!),
+                    iPv4Address: INADDR_LOOPBACK,
+                    callback: { error, address in
+                        if error == nil {
+                            // Update to new channel
+                            self.disconnect()
+                            self.connectedChannel = channel
+                            channel?.userInfo = address!
+                        } else {
+                            self.printDebug(error!.localizedDescription)
+                        }
 
-                    self.perform(#selector(self.enqueueConnectToLocalIPv4Port), with: nil, afterDelay: self.reconnectDelay)
-                })
+                        self.perform(
+                            #selector(self.enqueueConnectToLocalIPv4Port),
+                            with: nil,
+                            afterDelay: self.reconnectDelay
+                        )
+                    }
+                )
             }
 
             @objc fileprivate func enqueueConnectToUSBDevice() {
@@ -375,22 +448,33 @@ protocol PTManagerDelegate {
                 channel?.delegate = self
 
                 // Connect to the device
-                channel?.connect(toPort: Int32(portNumber!), overUSBHub: PTUSBHub.shared(), deviceID: connectingToDeviceID, callback: { error in
-                    if error != nil {
-                        self.printDebug(error!.localizedDescription)
-                        // Reconnet to the device
-                        if channel?.userInfo != nil && (channel?.userInfo as! NSNumber).isEqual(to: self.connectingToDeviceID) {
-                            self.perform(#selector(self.enqueueConnectToUSBDevice), with: nil, afterDelay: self.reconnectDelay)
+                channel?.connect(
+                    toPort: Int32(portNumber!),
+                    overUSBHub: PTUSBHub.shared(),
+                    deviceID: connectingToDeviceID,
+                    callback: { error in
+                        if error != nil {
+                            self.printDebug(error!.localizedDescription)
+                            // Reconnet to the device
+                            let cond = channel?.userInfo != nil &&
+                                (channel?.userInfo as! NSNumber).isEqual(to: self.connectingToDeviceID)
+                            if cond {
+                                self.perform(
+                                    #selector(self.enqueueConnectToUSBDevice),
+                                    with: nil,
+                                    afterDelay: self.reconnectDelay
+                                )
+                            }
+                        } else {
+                            // Update connected device properties
+                            self.connectedDeviceID = self.connectingToDeviceID
+                            self.connectedChannel = channel
+                            self.delegate?.peertalk(didChangeConnection: true)
+                            // Check the device properties
+                            self.printDebug("\(self.connectedDeviceProperties!)")
                         }
-                    } else {
-                        // Update connected device properties
-                        self.connectedDeviceID = self.connectingToDeviceID
-                        self.connectedChannel = channel
-                        self.delegate?.peertalk(didChangeConnection: true)
-                        // Check the device properties
-                        self.printDebug("\(self.connectedDeviceProperties!)")
                     }
-                })
+                )
             }
         }
 
@@ -398,12 +482,10 @@ protocol PTManagerDelegate {
 
 // MARK: - Data extension for conversion
 extension Data {
-    /** Unarchive data into an object. It will be returned as type `Any` but you can cast it into the correct type. */
     func convert() -> Any {
         return NSKeyedUnarchiver.unarchiveObject(with: self)!
     }
 
-    /** Converts an object into Data using the NSKeyedArchiver */
     static func toData(object: Any) -> Data {
         return NSKeyedArchiver.archivedData(withRootObject: object)
     }
